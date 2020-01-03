@@ -1,14 +1,19 @@
 package io.choi.springbootgenerator
 
-import io.choi.springbootgenerator.domain.PostEntity
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+import io.choi.springbootgenerator.domain.UserEntity
 
 @SpringBootApplication
 class SpringBootGeneratorApplication
 
 fun main(args: Array<String>) {
-    Generator().apply {
-        createAll(PostEntity::class)
-    }
+    generateFromEntity()
 //    runApplication<SpringBootGeneratorApplication>(*args)
 }
+
+fun generateFromEntity() =
+        Generator().apply {
+            createAll(UserEntity::class, true)
+        }
