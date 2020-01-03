@@ -33,19 +33,25 @@ class UserController {
             }
 
     @GetMapping
-    fun findAll(): ResponseEntity<List<UserDto>> =
-            ResponseEntity(
-                    userService?.findAll()!!
-                            .map { it.sanitize() },
-                    HttpStatus.OK
-            )
-
-    fun findByUsername(username: String): ResponseEntity<List<UserDto>> =
-            ResponseEntity(
-                    userService?.findByUsername(username)!!
-                            .map { it.sanitize() },
-                    HttpStatus.OK
-            )
+    fun findAll(@RequestParam username: kotlin.String?, 
+@RequestParam email: kotlin.String?): ResponseEntity<List<UserDto>> =
+            when {
+                username != null -> ResponseEntity(
+                        userService?.findByUsername(username)!!
+                                .map { it.sanitize() },
+                        HttpStatus.OK
+                )
+                email != null -> ResponseEntity(
+                        userService?.findByEmail(email)!!
+                                .map { it.sanitize() },
+                        HttpStatus.OK
+                )
+                else -> ResponseEntity(
+                        userService?.findAll()!!
+                                .map { it.sanitize() },
+                        HttpStatus.OK
+                )
+            }
             
     @PutMapping
     fun update(@RequestBody user: UserDto): ResponseEntity<UserDto> =

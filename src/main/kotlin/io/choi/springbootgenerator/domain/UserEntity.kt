@@ -21,6 +21,7 @@ class UserEntity(
         @Column(nullable = false, length = 100)
         var password: String? = null,
 
+        @FindBy
         @Column(nullable = false, length = 120, unique = true)
         @Santized
         var email: String? = null,

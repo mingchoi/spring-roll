@@ -9,8 +9,8 @@ import io.choi.springbootgenerator.domain.UserEntity
 class SpringBootGeneratorApplication
 
 fun main(args: Array<String>) {
-    generateFromEntity()
-//    runApplication<SpringBootGeneratorApplication>(*args)
+//    generateFromEntity()
+    runApplication<SpringBootGeneratorApplication>(*args)
 }
 
 fun generateFromEntity() =

@@ -5,4 +5,5 @@ import io.choi.springbootgenerator.domain.UserEntity
 
 interface UserRepository : CrudRepository<UserEntity, String>{
 	fun findByUsername(username: String): List<UserEntity>
+	fun findByEmail(email: String): List<UserEntity>
 }

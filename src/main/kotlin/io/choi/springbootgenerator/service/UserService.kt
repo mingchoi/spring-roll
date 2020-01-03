@@ -12,6 +12,7 @@ interface UserService {
     fun findById(id:String): UserDto?
     fun findAll(): List<UserDto>
 	fun findByUsername(username: String): List<UserDto>
+	fun findByEmail(email: String): List<UserDto>
     fun update(user: UserDto): UserDto?
     fun delete(user: UserDto)
 }
@@ -40,6 +41,8 @@ class UserServiceImpl : UserService {
         
 	override fun findByUsername(username: String): List<UserDto> = 
 		userRepository?.findByUsername(username)!!.map { UserDto.fromEntity(it) }
+	override fun findByEmail(email: String): List<UserDto> = 
+		userRepository?.findByEmail(email)!!.map { UserDto.fromEntity(it) }
 
     override fun update(user: UserDto): UserDto =
         UserDto.fromEntity(

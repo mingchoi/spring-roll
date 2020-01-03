@@ -2,6 +2,7 @@ package io.choi.springbootgenerator
 
 import io.choi.springbootgenerator.annotation.FindBy
 import io.choi.springbootgenerator.annotation.Santized
+import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -226,17 +227,13 @@ $implementMethodList
             it.annotation.any { an -> an is FindBy }
         }
 
-        val implementMethodList = findByColumns.joinToString("\n") {
-            """
-    fun findBy${it.name.capitalize()}(${it.name.toLowerCase()}: ${
-            it.type.toString().replace("kotlin.", "").replace("?", "")
-            }): ResponseEntity<List<${info.className}Dto>> =
-            ResponseEntity(
-                    ${info.className.toLowerCase()}Service?.findBy${it.name.capitalize()}(${it.name.toLowerCase()})!!
-                            .map { it.sanitize() },
-                    HttpStatus.OK
-            )
-            """
+        val findByReqPara = findByColumns.joinToString(", \n") { "@RequestParam ${it.name}: ${it.type}" }
+        val findByWhenCase = findByColumns.joinToString("\n") {
+            "                ${it.name} != null -> ResponseEntity(\n" +
+                    "                        ${info.className.toLowerCase()}Service?.findBy${it.name.capitalize()}(${it.name})!!\n" +
+                    "                                .map { it.sanitize() },\n" +
+                    "                        HttpStatus.OK\n" +
+                    "                )"
         }
 
         val sb = StringBuilder().apply {
@@ -276,13 +273,16 @@ class ${info.className}Controller {
             }
 
     @GetMapping
-    fun findAll(): ResponseEntity<List<${info.className}Dto>> =
-            ResponseEntity(
-                    ${info.className.toLowerCase()}Service?.findAll()!!
-                            .map { it.sanitize() },
-                    HttpStatus.OK
-            )
-$implementMethodList
+    fun findAll(${findByReqPara}): ResponseEntity<List<${info.className}Dto>> =
+            when {
+$findByWhenCase
+                else -> ResponseEntity(
+                        ${info.className.toLowerCase()}Service?.findAll()!!
+                                .map { it.sanitize() },
+                        HttpStatus.OK
+                )
+            }
+            
     @PutMapping
     fun update(@RequestBody ${info.className.toLowerCase()}: ${info.className}Dto): ResponseEntity<${info.className}Dto> =
             try {
