@@ -33,8 +33,8 @@ class UserController {
             }
 
     @GetMapping
-    fun findAll(@RequestParam username: kotlin.String?, 
-@RequestParam email: kotlin.String?): ResponseEntity<List<UserDto>> =
+    fun findAll(@RequestParam username: kotlin.String?,
+				@RequestParam email: kotlin.String?): ResponseEntity<List<UserDto>> =
             when {
                 username != null -> ResponseEntity(
                         userService?.findByUsername(username)!!
@@ -70,4 +70,4 @@ class UserController {
             } catch (e: Exception) {
                 ResponseEntity(HttpStatus.NOT_FOUND)
             }
-}
+} 
