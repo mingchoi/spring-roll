@@ -105,10 +105,11 @@ ${if (isUser) """
         if (username == null) {
             throw UsernameNotFoundException(username)
         } else {
-            val u = userRepository?.findByUsername(username)?.first()
-                    ?: throw UsernameNotFoundException(username)
-            return User(u.username,
-                    u.password,
+            val result = userRepository?.findByUsername(username)!!
+            if (result.isEmpty()) throw UsernameNotFoundException(username)
+            val user = result.first()
+            return User(user.username,
+                    user.password,
                     true,
                     true,
                     true,

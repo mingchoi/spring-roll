@@ -40,16 +40,20 @@ class AuthenticationFilter(
     }
 
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
-        val creds = jacksonObjectMapper().readValue<LoginReqModel>(
-                request?.inputStream,
-                LoginReqModel::class.java)
-        return authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(
-                        creds.username,
-                        creds.password,
-                        emptyList()
-                )
-        )
+        try {
+            val creds = jacksonObjectMapper().readValue<LoginReqModel>(
+                    request?.inputStream,
+                    LoginReqModel::class.java)
+            return authenticationManager.authenticate(
+                    UsernamePasswordAuthenticationToken(
+                            creds.username,
+                            creds.password,
+                            emptyList()
+                    )
+            )
+        } catch (e: Exception) {
+            throw UsernameNotFoundException("")
+        }
     }
 
     override fun successfulAuthentication(request: HttpServletRequest?, response: HttpServletResponse?, chain: FilterChain?, authResult: Authentication?) {
