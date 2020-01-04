@@ -5,41 +5,43 @@ import io.choi.springbootgenerator.generator.EntityInfo
 
 
 class ServiceTemplate(private val info: EntityInfo) {
-  private val cClassName = info.className
-  private val className = info.className.toLowerCase()
-  private val packageName = info.packageName
+    private val cClassName = info.className
+    private val className = info.className.toLowerCase()
+    private val packageName = info.packageName
 
-  private val idField = info.parameters
-      .first { it.name.toLowerCase() == "id" }
+    private val idField = info.parameters
+            .first { it.name.toLowerCase() == "id" }
 
-  private val idFieldType = idField.type.toString().replace("kotlin.", "").replace("?", "")
+    private val idFieldType = idField.type.toString().replace("kotlin.", "").replace("?", "")
 
-  private val interfaceFindByIdLine = "fun findById(${idField.name}:$idFieldType): ${cClassName}Dto?"
+    private val interfaceFindByIdLine = "fun findById(${idField.name}:$idFieldType): ${cClassName}Dto?"
 
-  private val findByColumns = info.parameters.filter {
-    it.annotation.any { an -> an is FindBy }
-  }
+    private val findByColumns = info.parameters.filter {
+        it.annotation.any { an -> an is FindBy }
+    }
 
-  private val interfaceMethodList = findByColumns.joinToString("\n") {
-    val Name = it.name.capitalize()
-    val name = it.name.toLowerCase()
-    val type = it.type.toString()
-        .replace("kotlin.", "")
-        .replace("?", "")
-    "    fun findBy${Name}(${name}: ${type}): List<${cClassName}Dto>"
-  }
+    private val interfaceMethodList = findByColumns.joinToString("\n") {
+        val Name = it.name.capitalize()
+        val name = it.name.toLowerCase()
+        val type = it.type.toString()
+                .replace("kotlin.", "")
+                .replace("?", "")
+        "    fun findBy${Name}(${name}: ${type}): List<${cClassName}Dto>"
+    }
 
-  private val implementMethodList = findByColumns.joinToString("\n\n") {
-    val Name = it.name.capitalize()
-    val name = it.name.toLowerCase()
-    val type = it.type.toString()
-        .replace("kotlin.", "")
-        .replace("?", "")
-    "    override fun findBy${Name}(${name}: ${type}): List<${cClassName}Dto> = \n" +
-        "        ${className}Repository?.findBy${Name}(${name})!!.map { ${cClassName}Dto.fromEntity(it) }"
-  }
+    private val implementMethodList = findByColumns.joinToString("\n\n") {
+        val Name = it.name.capitalize()
+        val name = it.name.toLowerCase()
+        val type = it.type.toString()
+                .replace("kotlin.", "")
+                .replace("?", "")
+        "    override fun findBy${Name}(${name}: ${type}): List<${cClassName}Dto> = \n" +
+                "        ${className}Repository?.findBy${Name}(${name})!!.map { ${cClassName}Dto.fromEntity(it) }"
+    }
 
-  fun build() = """
+    private val isUser = className == "user"
+
+    fun build() = """
 package ${packageName}.service               
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -49,7 +51,7 @@ import java.util.UUID
 import ${packageName}.dto.${cClassName}Dto
 import ${packageName}.repository.${cClassName}Repository
 
-interface ${cClassName}Service {
+interface ${cClassName}Service${if (isUser) ": UserDetailsService" else ""} {
     fun create(${className}: ${cClassName}Dto): ${cClassName}Dto?
     $interfaceFindByIdLine
     fun findAll(): List<${cClassName}Dto>
@@ -67,7 +69,7 @@ class ${cClassName}ServiceImpl : ${cClassName}Service {
         ${cClassName}Dto.fromEntity(
             ${className}Repository?.save(
                 ${className}.copy(
-                    id = UUID.randomUUID().toString()
+                    id = UUID.randomUUID().toString()${if (isUser) "\n,password = BCryptPasswordEncoder().encode(user.password)" else ""}
                 ).toEntity()
             )!!
         )
@@ -89,6 +91,23 @@ $implementMethodList
 
     override fun delete(${className}: ${cClassName}Dto): Unit =
             ${className}Repository?.delete(${className}.toEntity())!!
+${if (isUser) """
+    override fun loadUserByUsername(username: String?): UserDetails {
+        if (username == null) {
+            throw UsernameNotFoundException(username)
+        } else {
+            val u = userRepository?.findByUsername(username)?.first()
+                    ?: throw UsernameNotFoundException(username)
+            return User(u.username,
+                    u.password,
+                    true,
+                    true,
+                    true,
+                    true,
+                    emptyList())
+        }
+    } 
+""".trimIndent() else ""}
 }
   """.trimIndent()
 }

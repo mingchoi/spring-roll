@@ -1,6 +1,6 @@
-package io.choi.springbootgenerator.service
+package io.choi.springbootgenerator.security
 
-import io.choi.springbootgenerator.security.AuthenticationFilter
+import io.choi.springbootgenerator.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment

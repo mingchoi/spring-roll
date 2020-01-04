@@ -4,23 +4,23 @@ import io.choi.springbootgenerator.annotation.FindBy
 import io.choi.springbootgenerator.generator.EntityInfo
 
 class RepositoryTemplate(private val info: EntityInfo) {
-  private val className = info.className
-  private val packageName = info.packageName
+    private val className = info.className
+    private val packageName = info.packageName
 
-  private val findByColumns = info.parameters.filter {
-    it.annotation.any { an -> an is FindBy }
-  }
+    private val findByColumns = info.parameters.filter {
+        it.annotation.any { an -> an is FindBy }
+    }
 
-  private val methodList = findByColumns.joinToString("\n") {
-    val cName = it.name.capitalize()
-    val lName = it.name.toLowerCase()
-    val inputType = it.type.toString()
-        .replace("kotlin.", "")
-        .replace("?", "")
-    "\tfun findBy${cName}(${lName}: ${inputType}): List<${className}Entity>"
-  }
+    private val methodList = findByColumns.joinToString("\n") {
+        val cName = it.name.capitalize()
+        val lName = it.name.toLowerCase()
+        val inputType = it.type.toString()
+                .replace("kotlin.", "")
+                .replace("?", "")
+        "\tfun findBy${cName}(${lName}: ${inputType}): List<${className}Entity>"
+    }
 
-  fun build() = """
+    fun build() = """
 package ${packageName}.repository
 
 import org.springframework.data.repository.CrudRepository

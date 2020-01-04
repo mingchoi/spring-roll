@@ -5,25 +5,25 @@ import io.choi.springbootgenerator.generator.EntityInfo
 
 
 class RestControllerTemplate(private val info: EntityInfo) {
-  private val cClassName = info.className
-  private val className = info.className.toLowerCase()
-  private val packageName = info.packageName
+    private val cClassName = info.className
+    private val className = info.className.toLowerCase()
+    private val packageName = info.packageName
 
-  private val findByColumns = info.parameters.filter {
-    it.annotation.any { an -> an is FindBy }
-  }
+    private val findByColumns = info.parameters.filter {
+        it.annotation.any { an -> an is FindBy }
+    }
 
-  private val findByReqPara = findByColumns.joinToString(",\n\t\t\t\t") { "@RequestParam ${it.name}: ${it.type}" }
+    private val findByReqPara = findByColumns.joinToString(",\n\t\t\t\t") { "@RequestParam ${it.name}: ${it.type}" }
 
-  private val findByWhenCase = findByColumns.joinToString("\n") {
-    "                ${it.name} != null -> ResponseEntity(\n" +
-        "                        ${info.className.toLowerCase()}Service?.findBy${it.name.capitalize()}(${it.name})!!\n" +
-        "                                .map { it.sanitize() },\n" +
-        "                        HttpStatus.OK\n" +
-        "                )"
-  }
+    private val findByWhenCase = findByColumns.joinToString("\n") {
+        "                ${it.name} != null -> ResponseEntity(\n" +
+                "                        ${info.className.toLowerCase()}Service?.findBy${it.name.capitalize()}(${it.name})!!\n" +
+                "                                .map { it.sanitize() },\n" +
+                "                        HttpStatus.OK\n" +
+                "                )"
+    }
 
-  fun build() = """
+    fun build() = """
 package ${info.packageName}.controller
 
 import org.springframework.beans.factory.annotation.Autowired
