@@ -44,9 +44,17 @@ class ServiceTemplate(private val info: EntityInfo) {
     fun build() = """
 package ${packageName}.service               
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import java.util.UUID
+
+import org.springframework.beans.factory.annotation.Autowired
+${if (isUser) """
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder 
+""".trimIndent() else ""}
+import org.springframework.stereotype.Service
 
 import ${packageName}.dto.${cClassName}Dto
 import ${packageName}.repository.${cClassName}Repository
@@ -69,7 +77,8 @@ class ${cClassName}ServiceImpl : ${cClassName}Service {
         ${cClassName}Dto.fromEntity(
             ${className}Repository?.save(
                 ${className}.copy(
-                    id = UUID.randomUUID().toString()${if (isUser) "\n,password = BCryptPasswordEncoder().encode(user.password)" else ""}
+                    id = UUID.randomUUID().toString()${if (isUser) """,
+                    password = BCryptPasswordEncoder().encode(user.password)""".trimMargin() else ""}
                 ).toEntity()
             )!!
         )
@@ -106,8 +115,7 @@ ${if (isUser) """
                     true,
                     emptyList())
         }
-    } 
-""".trimIndent() else ""}
+    }""" else ""}
 }
-  """.trimIndent()
+""".trimIndent()
 }

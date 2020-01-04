@@ -1,10 +1,7 @@
 package io.choi.springbootgenerator.generator
 
 import io.choi.springbootgenerator.domain.UserEntity
-import io.choi.springbootgenerator.generator.template.DtoTemplate
-import io.choi.springbootgenerator.generator.template.RepositoryTemplate
-import io.choi.springbootgenerator.generator.template.RestControllerTemplate
-import io.choi.springbootgenerator.generator.template.ServiceTemplate
+import io.choi.springbootgenerator.generator.template.*
 import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -72,6 +69,21 @@ class Generator {
                     overWrite
             )
 
+    fun createSecurity(info: EntityInfo, overWrite: Boolean = false) {
+        save(
+                "src/main/kotlin/${info.packageName.replace(".", "/")}" +
+                        "/security/WebSecurity.kt",
+                WebSecurityTemplate(info).build(),
+                overWrite
+        )
+        save(
+                "src/main/kotlin/${info.packageName.replace(".", "/")}" +
+                        "/security/AuthenticationFilter.kt",
+                AuthenticationFilterTemplate(info).build(),
+                overWrite
+        )
+    }
+
     private fun save(path: String, content: String, overWrite: Boolean) = File(path).apply {
         when (exists()) {
             false -> {
@@ -94,5 +106,6 @@ class Generator {
 fun main(args: Array<String>) {
     Generator().apply {
         createAll(UserEntity::class, true)
+        createSecurity(analyze(UserEntity::class), true)
     }
 }
