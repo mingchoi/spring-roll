@@ -1,5 +1,6 @@
 package io.choi.springbootgenerator.generator
 
+import io.choi.springbootgenerator.domain.NoteEntity
 import io.choi.springbootgenerator.domain.UserEntity
 import io.choi.springbootgenerator.generator.template.*
 import java.io.File
@@ -107,5 +108,6 @@ fun main(args: Array<String>) {
     Generator().apply {
         createAll(UserEntity::class, true)
         createSecurity(analyze(UserEntity::class), true)
+        createAll(NoteEntity::class, true)
     }
 }
