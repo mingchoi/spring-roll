@@ -10,4 +10,3 @@ class SpringBootGeneratorApplication
 fun main(args: Array<String>) {
     runApplication<SpringBootGeneratorApplication>(*args)
 }
-
