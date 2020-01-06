@@ -6,12 +6,12 @@ import io.choi.springbootgenerator.domain.UserEntity
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class UserDto (
-	val id: String?,
-	val username: String?,
-	val password: String?,
-	val email: String?,
-	val age: Int?,
-	val vip: Boolean?
+	val id: String? = null,
+	val username: String? = null,
+	val password: String? = null,
+	val email: String? = null,
+	val age: Int? = null,
+	val vip: Boolean? = null
 ){
     fun toEntity() = UserEntity(id, username, password, email, age, vip)
     

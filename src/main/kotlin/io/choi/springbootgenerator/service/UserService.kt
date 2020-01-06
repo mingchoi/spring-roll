@@ -8,9 +8,11 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder 
+
 import org.springframework.stereotype.Service
 
 import io.choi.springbootgenerator.dto.UserDto
+
 import io.choi.springbootgenerator.repository.UserRepository
 
 interface UserService: UserDetailsService {
@@ -28,8 +30,8 @@ class UserServiceImpl : UserService {
     @Autowired
     var userRepository: UserRepository? = null
 
-    override fun create(user: UserDto): UserDto? =
-        UserDto.fromEntity(
+    override fun create(user: UserDto): UserDto? { 
+        return UserDto.fromEntity(
             userRepository?.save(
                 user.copy(
                     id = UUID.randomUUID().toString(),
@@ -37,6 +39,7 @@ class UserServiceImpl : UserService {
                 ).toEntity()
             )!!
         )
+    }
 
     override fun findById(id: String): UserDto? =
         UserDto.fromEntity(

@@ -4,9 +4,13 @@ import java.util.UUID
 
 import org.springframework.beans.factory.annotation.Autowired
 
+
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 import io.choi.springbootgenerator.dto.NoteDto
+
+import io.choi.springbootgenerator.dto.UserDto
 import io.choi.springbootgenerator.repository.NoteRepository
 
 interface NoteService {
@@ -23,14 +27,18 @@ class NoteServiceImpl : NoteService {
     @Autowired
     var noteRepository: NoteRepository? = null
 
-    override fun create(note: NoteDto): NoteDto? =
-        NoteDto.fromEntity(
+    override fun create(note: NoteDto): NoteDto? { 
+val userId = SecurityContextHolder.getContext()
+            .authentication.principal.toString()
+
+        return NoteDto.fromEntity(
             noteRepository?.save(
                 note.copy(
-                    id = UUID.randomUUID().toString()
+                    id = UUID.randomUUID().toString(), user = UserDto(userId)
                 ).toEntity()
             )!!
         )
+    }
 
     override fun findById(id: String): NoteDto? =
         NoteDto.fromEntity(

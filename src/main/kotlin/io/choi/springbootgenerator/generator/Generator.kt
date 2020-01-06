@@ -83,6 +83,12 @@ class Generator {
                 AuthenticationFilterTemplate(info).build(),
                 overWrite
         )
+        save(
+                "src/main/kotlin/${info.packageName.replace(".", "/")}" +
+                        "/security/AuthorizationFilter.kt",
+                AuthorizationFilterTemplate(info).build(),
+                overWrite
+        )
     }
 
     private fun save(path: String, content: String, overWrite: Boolean) = File(path).apply {

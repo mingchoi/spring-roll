@@ -17,7 +17,7 @@ class DtoTemplate(private val info: EntityInfo) {
                     else
                         t.replace("kotlin.", "")
                 }
-                "\tval ${it.name}: $type"
+                "\tval ${it.name}: $type = null"
             })
 
     private fun toEntityParasName() = info.parameters

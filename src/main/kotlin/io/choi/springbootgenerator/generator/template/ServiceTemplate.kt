@@ -14,6 +14,10 @@ class ServiceTemplate(private val info: EntityInfo) {
 
     private val idFieldType = idField.type.toString().replace("kotlin.", "").replace("?", "")
 
+    private val userField = info.parameters.firstOrNull {
+        it.type.toString().contains("Entity?")
+    }
+
     private val interfaceFindByIdLine = "fun findById(${idField.name}:$idFieldType): ${cClassName}Dto?"
 
     private val findByColumns = info.parameters.filter {
@@ -54,9 +58,13 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder 
 """.trimIndent() else ""}
+${if (userField != null) """
+import org.springframework.security.core.context.SecurityContextHolder""" else ""}
 import org.springframework.stereotype.Service
 
 import ${packageName}.dto.${cClassName}Dto
+${if (userField != null) """
+import ${packageName}.dto.UserDto""" else ""}
 import ${packageName}.repository.${cClassName}Repository
 
 interface ${cClassName}Service${if (isUser) ": UserDetailsService" else ""} {
@@ -73,15 +81,21 @@ class ${cClassName}ServiceImpl : ${cClassName}Service {
     @Autowired
     var ${className}Repository: ${cClassName}Repository? = null
 
-    override fun create(${className}: ${cClassName}Dto): ${cClassName}Dto? =
-        ${cClassName}Dto.fromEntity(
+    override fun create(${className}: ${cClassName}Dto): ${cClassName}Dto? { ${
+    if (userField != null) """
+val userId = SecurityContextHolder.getContext()
+            .authentication.principal.toString()
+""" else ""}
+        return ${cClassName}Dto.fromEntity(
             ${className}Repository?.save(
                 ${className}.copy(
                     id = UUID.randomUUID().toString()${if (isUser) """,
-                    password = BCryptPasswordEncoder().encode(user.password)""".trimMargin() else ""}
+                    password = BCryptPasswordEncoder().encode(user.password)""".trimMargin() else ""}${
+    if (userField != null) ", " + userField.name + " = UserDto(userId)" else ""}
                 ).toEntity()
             )!!
         )
+    }
 
     override fun findById(id: String): ${cClassName}Dto? =
         ${cClassName}Dto.fromEntity(

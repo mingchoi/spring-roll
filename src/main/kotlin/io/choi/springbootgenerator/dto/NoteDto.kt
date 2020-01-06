@@ -6,10 +6,10 @@ import io.choi.springbootgenerator.domain.NoteEntity
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class NoteDto (
-	val id: String?,
-	val user: UserDto?,
-	val title: String?,
-	val content: String?
+	val id: String? = null,
+	val user: UserDto? = null,
+	val title: String? = null,
+	val content: String? = null
 ){
     fun toEntity() = NoteEntity(id, user?.toEntity(), title, content)
     
