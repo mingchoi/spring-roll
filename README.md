@@ -30,7 +30,7 @@ This is a experimental project of code generate on Spring Cloud. It can generate
   - Login API
     - Generate JWT token
   
-# How to use
+# Getting Started
 
 ## Prepare your Domain Model
 First, ready your domain model in `domain/YourEntity.kt`.
@@ -106,7 +106,7 @@ curl -H "Content-Type:application/json" -X POST -d '{
 }
 ```
 
-Get user with ID by `GET /user/{id}`
+Get single user with ID by `GET /user/{id}`
 ```
 curl http://localhost:8080/user/bf3c7072-97eb-4c35-a89b-648ea706c27d
 >>>{
@@ -119,7 +119,6 @@ curl http://localhost:8080/user/bf3c7072-97eb-4c35-a89b-648ea706c27d
 Update user by `PUT /user` (Format is similar to POST)
 
 Delete user by `DELETE /user` (Format is similar to POST)
-
 
 ## Adding Security
 Run the code below to generate security config and filters
@@ -145,3 +144,13 @@ curl -H "Content-Type:application/json" -X POST -d '{
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYmYzYzcwNzItOTdlYi00YzM1LWE4OWItNjQ4ZWE3MDZjMjdkIn0.pKwqRMKA_pDRlD4_wGKd3WhFZZp8Y4wl6ItZiBh1qr0"
 }
 ```
+
+With default security config, only register and login API are open to public. Regular CRUD endpoint must 
+
+
+## Future
+There are few feature will implenment in future
+- Entity access control
+- CLI interactive Setup 
+- Admin UI
+- Spring Cloud support
