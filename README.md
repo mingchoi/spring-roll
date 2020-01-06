@@ -149,8 +149,9 @@ With default security config, only register and login API are open to public. Re
 
 
 ## Future
-There are few feature will implenment in future
+There are few feature planned to implenment in future
 - Entity access control
+- Subscription for Real-time update
 - CLI interactive Setup 
 - Admin UI
 - Spring Cloud support
